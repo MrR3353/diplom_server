@@ -129,3 +129,6 @@ LOGOUT_URL = 'logout'
 
 # Подключить отправку реальных писем: Django_4_v_primerakh.pdf, 212 страница
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
