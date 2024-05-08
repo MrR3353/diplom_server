@@ -51,7 +51,8 @@ def register(request):
             new_user.save()
             # Создать профиль пользователя
             Profile.objects.create(user=new_user)
-            return render(request, 'account/register_done.html', {'new_user': new_user})
+            login(request, new_user, backend='django.contrib.auth.backends.ModelBackend')
+            return redirect('dashboard')
     else:
         user_form = UserRegistrationForm()
     return render(request, 'account/register.html', {'user_form': user_form})
@@ -72,4 +73,3 @@ def edit(request):
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileEditForm(instance=request.user.profile)
     return render(request, 'account/edit.html', {'user_form': user_form, 'profile_form': profile_form})
-

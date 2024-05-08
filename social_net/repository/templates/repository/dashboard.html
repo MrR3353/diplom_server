@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}My repositories{% endblock %}
+{% block content %}
+    <h1>My repositories</h1>
+    {% if repositories %}
+        {% for repo in repositories %}
+        repo
+        {% endfor %}
+    {% else %}
+        <p>You don't have any repositories yet</p>
+    {% endif %}
+{% endblock %}

@@ -35,24 +35,8 @@
 # ├── manage.py
 # └── README.md
 
-# циклы
+# cd .\social_net\
+# python manage.py runserver
 
-# print('hello')
-# print('hello')
-# print('hello')
-
-
-# for i in range(5):
-#     print(i)
-
-# for i in range(1, 11):  # [a, b)
-#     print(i)
-
-# for i in range(10, 0, -1):  # [a, b)
-#     print(i)
-
-
-
-
-
+print((25 ** 0.5) % 1)
 
