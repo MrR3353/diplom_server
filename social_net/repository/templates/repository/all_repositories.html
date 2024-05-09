@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}All repositories{% endblock %}
+{% block content %}
+    <h1>All repositories</h1>
+    {% if repositories %}
+        <ul>
+            {% for repo in repositories %}
+            <li>
+                <a href="{% url 'repository_detail' repo.user.username repo.name %}">{{repo.name}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No any repositories yet</p>
+    {% endif %}
+{% endblock %}
