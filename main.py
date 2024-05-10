@@ -5,7 +5,7 @@
 # │   │       └── base.css
 # │   ├── templates
 # │   │   ├── account
-# │   │   │   └── my_repositories.html
+# │   │   │   └── profile.html
 # │   │   ├── registration
 # │   │   │   ├── logged_out.html
 # │   │   │   ├── login.html

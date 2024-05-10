@@ -28,11 +28,6 @@ from django.contrib import messages
 #     return render(request, 'account/login.html', {'form': form})
 
 
-@login_required
-def dashboard(request):
-    return render(request, 'account/dashboard.html', {'section': 'dashboard'})
-
-
 def logout_view(request):
     logout(request)
     # return redirect('login') # на главную страницу сайта
@@ -52,7 +47,7 @@ def register(request):
             # Создать профиль пользователя
             Profile.objects.create(user=new_user)
             login(request, new_user, backend='django.contrib.auth.backends.ModelBackend')
-            return redirect('dashboard')
+            return redirect('all_repositories')
     else:
         user_form = UserRegistrationForm()
     return render(request, 'account/register.html', {'user_form': user_form})

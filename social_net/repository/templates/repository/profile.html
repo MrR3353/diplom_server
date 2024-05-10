@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{author.username}}{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <h1>{{author.username}}</h1>
+        </div>
+        <div class="col-4">
+            <h2>{{author.first_name}} {{author.last_name}}</h2>
+            {% if author.profile.photo %}
+                <img src="{{ author.profile.photo.url }}" width="300px">
+            {% else %}
+                <img src="{% static 'images/default_profile_images/'%}{{default_profile_image}}" width="300px">
+            {% endif %}
+        </div>
+        <div class="col-6">
+            <h2>Repositories</h2>
+            {% if author == user %}
+            <p>
+                <a href="{% url "create_repository" %}">Create new repository</a>
+            </p>
+            {% endif %}
+            {% if repositories %}
+                <ul>
+                    {% for repo in repositories %}
+                    <li>
+                        <a href="{% url 'repository_detail' author.username repo.name %}">{{repo.name}}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                {% if author == user %}
+                    <p>You don't have any repositories yet</p>
+                {% else %}
+                    <p>{{author.username}} don't have any repositories yet</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+
+
+{% endblock %}

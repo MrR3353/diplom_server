@@ -2,9 +2,9 @@
 {% block title %}People{% endblock %}
 {% block content %}
     <h1>People</h1>
-        {% for user_ in users %}
+        {% for author in users %}
         <li>
-            <a href="{% url 'user_repositories' user_.username %}">{{user_.username}}</a>
+            <a href="{% url 'profile' author.username %}">{{author.username}}</a>
         </li>
         {% endfor %}
 {% endblock %}
