@@ -4,10 +4,12 @@ import random
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
+
 from .forms import RepositoryCreationForm
 from .models import Repository
+from social_net import settings
+
 
 
 def profile(request, username):
@@ -30,6 +32,23 @@ def all_repositories(request):
                   {'section': 'all_repositories', 'repositories': repositories})
 
 
+def handle_uploaded_file(files, username, repository):
+    # Открываем файл для записи на сервере
+
+    files_path = os.path.join(settings.MEDIA_ROOT, 'files')
+    os.makedirs(files_path, exist_ok=True)
+    files_path = os.path.join(files_path, username)
+    os.makedirs(files_path, exist_ok=True)
+    files_path = os.path.join(files_path, repository)
+    os.mkdir(files_path)
+
+    for file in files:
+        with open(os.path.join(files_path, file.name), 'wb+') as destination:
+            # Записываем содержимое файла
+            for chunk in file.chunks():
+                destination.write(chunk)
+
+
 @login_required
 def create_repository(request):
     if request.method == 'POST':
@@ -40,9 +59,13 @@ def create_repository(request):
                 description=request.POST['description'],
                 user=request.user  # Указываем текущего пользователя
             )
-            repository.save()
-            messages.success(request, 'Repository created successfully')
-            return redirect('profile', request.user)
+            files = request.FILES.getlist('files')
+            directories = request.POST['directories']
+            handle_uploaded_file(files, repository.user.username, repository.name)
+            print(directories)
+            # repository.save()
+            # messages.success(request, 'Repository created successfully')
+            # return redirect('profile', request.user)
         else:
             messages.error(request, 'Error creating new repository')
     else:

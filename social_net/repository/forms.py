@@ -2,7 +2,14 @@ from django import forms
 from .models import Repository
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
 class RepositoryCreationForm(forms.ModelForm):
+    files = forms.FileField(widget=MultipleFileInput(attrs={'multiple': True, 'webkitdirectory': True, 'directory': True}),
+                            required=False)
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)

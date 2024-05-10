@@ -9,9 +9,9 @@
         <div class="col-4">
             <h2>{{author.first_name}} {{author.last_name}}</h2>
             {% if author.profile.photo %}
-                <img src="{{ author.profile.photo.url }}" width="300px">
+                <img src="{{ author.profile.photo.url }}" width="80%">
             {% else %}
-                <img src="{% static 'images/default_profile_images/'%}{{default_profile_image}}" width="300px">
+                <img src="{% static 'images/default_profile_images/'%}{{default_profile_image}}" width="80%">
             {% endif %}
         </div>
         <div class="col-6">
