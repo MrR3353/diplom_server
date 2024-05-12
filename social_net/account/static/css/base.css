@@ -1,5 +1,6 @@
 @import url(//fonts.googleapis.com/css?family=Muli);
 
+
 body {
     margin:0;
     padding:0;
@@ -274,4 +275,19 @@ img.user-detail {
 .action .date {
     font-style:italic;
     color:#ccc;
+}
+
+/* Стили для отображения иконок сворачивания/разворачивания */
+.caret {
+    cursor: pointer;
+<!--            user-select: none; /* Запретить выделение текста */-->
+}
+.caret-down {
+    transform: rotate(90deg);
+}
+.nested {
+    display: none;
+}
+.active {
+    display: block;
 }

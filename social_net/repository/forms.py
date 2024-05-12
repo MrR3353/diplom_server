@@ -7,8 +7,12 @@ class MultipleFileInput(forms.ClearableFileInput):
 
 
 class RepositoryCreationForm(forms.ModelForm):
-    files = forms.FileField(widget=MultipleFileInput(attrs={'multiple': True, 'webkitdirectory': True, 'directory': True}),
-                            required=False)
+    files = forms.FileField(widget=MultipleFileInput(attrs={
+        'multiple': True,
+        'webkitdirectory': True,
+        'directory': True,
+        'allow_empty': True,
+    }), required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)

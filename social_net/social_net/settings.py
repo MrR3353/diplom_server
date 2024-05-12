@@ -138,3 +138,6 @@ AUTHENTICATION_BACKENDS = [
  'django.contrib.auth.backends.ModelBackend',
  'account.authentication.EmailAuthBackend',
 ]
+
+DATA_UPLOAD_MAX_NUMBER_FILES = None
+

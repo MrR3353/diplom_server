@@ -1,6 +1,52 @@
 {% extends "base.html" %}
 {% block title %}{{repository.name}}{% endblock %}
 {% block content %}
-    <h1>{{repository.name}}</h1>
-    <p>{{repository.description}}</p>
+<style>
+    /* Стили для отображения иконок сворачивания/разворачивания */
+    .caret {
+        cursor: pointer;
+<!--            user-select: none; /* Запретить выделение текста */-->
+    }
+    .caret-down {
+        transform: rotate(90deg);
+    }
+    .nested {
+        display: none;
+    }
+    .active {
+        display: block;
+    }
+</style>
+
+<h1>{{repository.name}}</h1>
+<p>{{repository.description}}</p>
+
+{% if file_structure %}
+    <ul>
+        {% include 'repository/repository_files.html' %}
+    </ul>
+{% else %}
+    <p>No files added</p>
+{% endif %}
+
+
+{% if repository.user == user %}
+    <a href="{% url 'delete_repository' repository.pk %}" class="btn btn-danger me-2">Delete</a>
+{% endif %}
+
+
+<script>
+    // Получить все элементы с классом "caret"
+    var toggler = document.getElementsByClassName("caret");
+    var i;
+
+    // Добавить обработчик события click к каждому элементу
+    for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function() {
+            this.parentElement.querySelector(".nested").classList.toggle("active");
+            this.classList.toggle("caret-down");
+        });
+    }
+</script>
+
 {% endblock %}
