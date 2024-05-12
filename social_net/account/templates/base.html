@@ -12,16 +12,16 @@
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="{% url "all_repositories" %}" class="nav-link px-2
-              {% if section == "all_repositories" %}text-white{% else %}text-secondary{% endif %}">VCS SERVER</a></li>
+          <li class="h5"><a href="{% url "all_repositories" %}" class="nav-link px-2
+              {% if section == "all_repositories" %}text-white{% else %}text-success{% endif %}">VCS SERVER</a></li>
           {% if request.user.is_authenticated %}
-          <li><a href="{% url "profile" user.username %}" class="nav-link px-2
-              {% if section == "profile" %}text-white{% else %}text-secondary{% endif %}">My repositories</a></li>
+          <li class="h5"><a href="{% url "profile" user.username %}" class="nav-link px-2
+              {% if section == "profile" %}text-white{% else %}text-success{% endif %}">My repositories</a></li>
           {% endif %}
-          <li><a href="{% url "developers" %}" class="nav-link px-2
-              {% if section == "developers" %}text-white{% else %}text-secondary{% endif %}">Developers</a></li>
-          <li><a href="#" class="nav-link px-2 text-secondary">FAQs</a></li>
-          <li><a href="#" class="nav-link px-2 text-secondary">About</a></li>
+          <li class="h5"><a href="{% url "developers" %}" class="nav-link px-2
+              {% if section == "developers" %}text-white{% else %}text-success{% endif %}">Developers</a></li>
+          <li class="h5"><a href="#" class="nav-link px-2 text-secondary">FAQs</a></li>
+          <li class="h5"><a href="#" class="nav-link px-2 text-secondary">About</a></li>
         </ul>
 
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
