@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %} {{relative_path.name}} {% endblock %}
+{% block content %}
+
+<h5>{{relative_path}}</h5>
+<p></p>
+
+{% if text_lines %}
+<pre class="line-numbers"><code class="language-javascript">{% for line in text_lines %}<span class="numeration"></span>{{line}}{% endfor %}</code></pre>
+{% endif %}
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/line-numbers/prism-line-numbers.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+<script>
+    Prism.highlightAll();
+</script>
+
+
+{% endblock %}
+
+

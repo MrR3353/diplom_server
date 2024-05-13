@@ -1,13 +1,16 @@
 <!--<ul>-->
     {% for sdir in file_structure.subdir %}
         <li>
-            <span class="caret"><b>{{ sdir.dir }}</b></span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right caret" viewBox="0 0 16 16">
+              <path d="M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753"></path>
+            </svg>
+            <span class="caret"><a href="{% url 'file_detail' repository.user.username repository.name sdir.path %}"><b>{{ sdir.dir }}</b></a></span>
             <ul class="nested">
                 {% include 'repository/repository_files.html' with file_structure=sdir %}
             </ul>
         </li>
     {% endfor %}
     {% for file in file_structure.files %}
-        <li>{{ file }}</li>
+        <li><a href="{% url 'file_detail' repository.user.username repository.name file.path %}">{{ file.name }}</a></li>
     {% endfor %}
 <!--</ul>-->

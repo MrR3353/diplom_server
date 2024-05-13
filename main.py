@@ -74,17 +74,12 @@ from pathlib import Path
 # os.makedirs('__MACOSX/._В3_04052024.pdf', exist_ok=True)
 # os.makedirs('a/b/c/d/e.py', exist_ok=True)
 # shutil.rmtree('a/b')
-def get_file_structure(directory):
-    file_structure = {'dir': Path(directory).name, 'files': [], 'subdir': []}
-    for item in os.listdir(directory):
-        item_path = os.path.join(directory, item)
-        if os.path.isfile(item_path):
-            file_structure['files'].append(item)
-        elif os.path.isdir(item_path):
-            file_structure['subdir'].append(get_file_structure(item_path))
-    return file_structure
 
-
-if __name__ == '__main__':
-    path = 'social_net/media/files/qqq2/test2/Вариант 3 (1)'
-    print(get_file_structure(path))
+# for i in range(1, 6):
+#     print(i)
+#
+# i = 1
+# while i <= 5:
+#     print(i)
+#     i += 1
+а

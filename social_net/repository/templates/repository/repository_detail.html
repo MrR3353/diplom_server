@@ -16,12 +16,17 @@
     .active {
         display: block;
     }
+    ul {
+        list-style-type: none;
+    }
 </style>
 
 <h1>{{repository.name}}</h1>
 <p>{{repository.description}}</p>
 
 {% if file_structure %}
+<button id="expandButton" class="expand" onclick="expand_collapse()">Expand all</button>
+
     <ul>
         {% include 'repository/repository_files.html' %}
     </ul>
@@ -47,6 +52,39 @@
             this.classList.toggle("caret-down");
         });
     }
+
+    function expand_collapse() {
+        // Получаем все элементы с классом "nested"
+
+        var nestedElements = document.querySelectorAll(".nested");
+        var btn = document.getElementById("expandButton");
+        if (btn.className == "expand") {
+            for (var i = 0; i < nestedElements.length; i++) {
+                nestedElements[i].classList.add("active");
+            }
+            btn.innerText = "Collapse all";
+            btn.classList.remove("expand");
+        } else {
+            for (var i = 0; i < nestedElements.length; i++) {
+                nestedElements[i].classList.remove("active");
+            }
+            btn.innerText = "Expand all";
+            btn.classList.add("expand");
+        }
+
+    }
+
+    function expandFirstLevel() {
+        // Получаем первый элемент с классом "nested"
+        var firstNested = document.querySelector(".nested");
+        firstNested.classList.add("active");
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        expandFirstLevel();
+    });
+
+
 </script>
 
 {% endblock %}

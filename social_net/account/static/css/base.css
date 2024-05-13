@@ -291,3 +291,6 @@ img.user-detail {
 .active {
     display: block;
 }
+ul {
+    list-style-type: none;
+}
