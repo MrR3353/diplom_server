@@ -7,12 +7,12 @@ from pathlib import Path
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import RepositoryCreationForm
 from .models import Repository
-from .file_handlers import save_uploaded_files, get_file_structure, get_file_type
+from .file_handlers import save_uploaded_files, get_file_structure, get_file_type, detect_encoding
 from social_net import settings
 
 
@@ -88,18 +88,29 @@ def delete_repository(request, repository_id):
         messages.success(request, 'Repository deleted successfully')
         return redirect('profile', request.user)
     messages.error(request, 'You do not have permission to delete that repository')
-    return redirect('repository_detail', repository.name)
+    return redirect('repository_detail', repository.user.username, repository.name)
 
 
 def file_detail(request, username, repository_name, relative_path):
     relative_path = Path(relative_path)
     absolute_path = os.path.join(settings.MEDIA_ROOT, 'files', username, repository_name, relative_path)
-    text_lines = None
-    if get_file_type(relative_path) == 'text':
-        try:
-            with open(absolute_path, 'r', encoding='utf-8') as file:
+    if not os.path.exists(absolute_path):
+        raise Http404(f"File {relative_path} not found")
+
+    user = get_object_or_404(User, username=username)
+    repository = get_object_or_404(Repository, user=user, name=repository_name)
+    if os.path.isdir(absolute_path):
+        repo_path = os.path.join(settings.MEDIA_ROOT, 'files', repository.user.username, repository.name)
+        file_structure = get_file_structure(repo_path, relative_path)
+        return render(request, 'repository/dir_detail.html',
+                      {'repository': repository, 'file_structure': file_structure})
+    else:
+        text_lines = None
+        img_path = None
+        file_type = get_file_type(relative_path)
+        if file_type == 'text':
+            with open(absolute_path, 'r', encoding=detect_encoding(absolute_path)) as file:
                 text_lines = file.readlines()
-        except UnicodeDecodeError as e:
-            with open(absolute_path, 'r') as file:
-                text_lines = file.readlines()
-    return render(request, 'repository/file_detail.html', {'relative_path': relative_path, 'text_lines': text_lines})
+        elif file_type == 'img':
+            img_path = os.path.join('files', username, repository_name, relative_path)
+        return render(request, 'repository/file_detail.html', {'repository': repository, 'relative_path': relative_path, 'text_lines': text_lines, 'img_path': img_path})

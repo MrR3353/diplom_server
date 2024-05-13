@@ -82,4 +82,12 @@ from pathlib import Path
 # while i <= 5:
 #     print(i)
 #     i += 1
-а
+
+def split_by_slash(value):
+    result = str(value).split(os.path.sep)
+    return [(result[i], os.path.join(*result[:i + 1])) for i in range(len(result))]
+
+path = 'a\\bc\\aef'
+print(split_by_slash(path))
+
+print(os.path.join('a', 'b', 'c'))

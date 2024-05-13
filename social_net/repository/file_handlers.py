@@ -3,6 +3,8 @@ import os
 import shutil
 from pathlib import Path
 
+import chardet
+
 from social_net import settings
 
 
@@ -55,7 +57,7 @@ def get_file_type(file_path):
                        '.tmp', '.temp', '.lock', '.thumbs.db', '.desktop.ini', '.suo', '.sln', '.vcproj', '.cproject',
                        '.dir-locals.el', '.project', '.classpath', '.settings', '.properties', '.ini', '.yaml', '.yml',
                        '.toml', '.xml', '.json', '.yml', '.yaml', '.env']  # и т.д.
-    img_extensions = ['.jpg', '.png', '.gif', '.bmp', '.tiff', '.svg', '.webp']  # и т.д.
+    img_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg', '.webp']  # и т.д.
 
     if file_extension in text_extensions:
         return 'text'
@@ -64,12 +66,11 @@ def get_file_type(file_path):
     else:
         return None
 
-# def get_file_structure(directory):
-#     file_structure = {'dir': Path(directory).name, 'path': directory, 'files': [], 'subdir': []}
-#     for item in os.listdir(directory):
-#         item_path = os.path.join(directory, item)
-#         if os.path.isfile(item_path):
-#             file_structure['files'].append({'name': item, 'path': item_path})
-#         elif os.path.isdir(item_path):
-#             file_structure['subdir'].append(get_file_structure(item_path))
-#     return file_structure
+
+def detect_encoding(file_path):
+    with open(file_path, 'rb') as file:
+        raw_data = file.read()
+        result = chardet.detect(raw_data)
+        encoding = result['encoding']
+        confidence = result['confidence']
+        return encoding
