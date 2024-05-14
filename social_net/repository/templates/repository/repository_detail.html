@@ -21,15 +21,24 @@
     }
 </style>
 
-<h1>{{repository.name}}</h1>
+
+
+<h1><a href="{% url 'repository_detail' repository.user.username repository.name %}">{{repository.name}}</a></h1>
 <p>{{repository.description}}</p>
 
 {% if file_structure %}
-<button id="expandButton" class="expand" onclick="expand_collapse()">Expand all</button>
+    <div class="row">
+        <div class="col">
+            <ul>
+                {% include 'repository/repository_files.html' %}
+            </ul>
+        </div>
+        <div class="col">
+            <button id="expandButton" class="expand" onclick="expand_collapse()">Expand all</button>
+        </div>
+    </div>
 
-    <ul>
-        {% include 'repository/repository_files.html' %}
-    </ul>
+
 {% else %}
     <p>No files added</p>
 {% endif %}

@@ -83,11 +83,18 @@ from pathlib import Path
 #     print(i)
 #     i += 1
 
-def split_by_slash(value):
-    result = str(value).split(os.path.sep)
-    return [(result[i], os.path.join(*result[:i + 1])) for i in range(len(result))]
 
-path = 'a\\bc\\aef'
-print(split_by_slash(path))
-
-print(os.path.join('a', 'b', 'c'))
+minr = 10**10
+for n in range(10, 1000):
+    k = bin(n)[2:]
+    if n % 3 == 0:
+        k += k[-3:]
+    else:
+        ost = bin((n % 3) * 3)[2:]
+        k += ost
+    r = int(k, 2)
+    if r > 151:
+        # if r < minr:
+        #     minr = r
+        minr = min(minr, r)
+print(minr)

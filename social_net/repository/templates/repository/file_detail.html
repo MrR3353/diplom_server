@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
+{% load custom_filters %}
 {% block title %} {{relative_path.name}} {% endblock %}
 {% block content %}
 
-<h1>{{repository.name}}</h1>
+<h1><a href="{% url 'repository_detail' repository.user.username repository.name %}">{{repository.name}}</a></h1>
 
-<h5>{{relative_path}}</h5>
-<p></p>
+<h5>
+{% with text=relative_path %}
+    {% for part, path in text|split_by_slash %}<a href="{% url 'file_detail' repository.user.username repository.name path %}">{{part}}\</a>{% endfor %}
+{% endwith %}
+</h5>
 
 {% if text_lines %}
 <pre class="line-numbers"><code class="language-javascript">{% for line in text_lines %}<span class="numeration"></span>{{line}}{% endfor %}</code></pre>

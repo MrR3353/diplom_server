@@ -22,16 +22,22 @@
     }
 </style>
 
-<h1>{{repository.name}}</h1>
+<h1><a href="{% url 'repository_detail' repository.user.username repository.name %}">{{repository.name}}</a></h1>
 
 {% if file_structure %}
-    <button id="expandButton" class="expand" onclick="expand_collapse()">Expand all</button>
+    <div class="row">
+        <div class="col">
+            <h5>
+            {% with text=file_structure.path %}
+                {% for part, path in text|split_by_slash %}<a href="{% url 'file_detail' repository.user.username repository.name path %}">{{part}}\</a>{% endfor %}
+            {% endwith %}
+            </h5>
+        </div>
+        <div class="col">
+            <button id="expandButton" class="expand" onclick="expand_collapse()">Expand all</button>
+        </div>
+    </div>
 
-    <p>
-    {% with text=file_structure.path %}
-        {% for part, path in text|split_by_slash %}<a href="{% url 'file_detail' repository.user.username repository.name path %}">{{part}}\</a>{% endfor %}
-    {% endwith %}
-    </p>
 
     <ul>
         {% include 'repository/repository_files.html' %}
