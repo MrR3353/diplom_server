@@ -2,25 +2,44 @@
 {% block title %}Create new repository{% endblock %}
 {% block content %}
     <h1>Create new repository</h1>
-    <form method="post" enctype="multipart/form-data">
-        {{ form.as_p }}
-        {% csrf_token %}
-        <input type="text" id="directories" name="directories" hidden />
-        <p></p>
-        <p><input type="submit" value="Create"></p>
-    </form>
+
+    <div class="row">
+        <div class="col-auto">
+            <form method="post" enctype="multipart/form-data">
+                {{ form.as_p }}
+                {% csrf_token %}
+                <input type="text" id="directories" name="directories" hidden />
+                <input type="text" id="temp_repository_name" name="temp_repository_name" value="{{temp_repository_name}}" hidden />
+                <p></p>
+                <p><input type="submit" value="Create"></p>
+            </form>
+        </div>
+        <div class="col m-5">
+            {% include 'repository/upload.html' with temp_repository_name=temp_repository_name %}
+        </div>
+    </div>
+
+
+
 <!--Скрипт записывает в словарь directories, ключ: имя файла, значение: полный путь (Django удаляет путь в имени файла) -->
 <script>
  files = document.querySelector("#id_files").files;
  document.querySelector("#id_files").addEventListener("change", function() {
     files = document.querySelector("#id_files").files;
-    var directories = {}
+    var directories = [];
     for (var file of files) {
-      file.webkitRelativePath
-      directories[file.name] = file.webkitRelativePath
+      file.webkitRelativePath;
+      directories.push(file.webkitRelativePath);
     }
     directories = JSON.stringify(directories);
+<!--    var directories = {}-->
+<!--    for (var file of files) {-->
+<!--      file.webkitRelativePath-->
+<!--      directories[file.name] = file.webkitRelativePath-->
+<!--    }-->
+<!--    directories = JSON.stringify(directories);-->
     document.querySelector("#directories").value = directories
  });
 </script>
+
 {% endblock %}

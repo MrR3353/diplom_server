@@ -8,21 +8,19 @@ import chardet
 from social_net import settings
 
 
-def save_uploaded_files(files, full_path, username, repository):
-    # TODO: не загружает папку .vcs и файл README.md который лежит в папке
-    # преобразуем строку в dict
-    full_path = json.loads(full_path)
+def save_uploaded_files(files, full_paths, username, repository):
     files_path = os.path.join(settings.MEDIA_ROOT, 'files')
     os.makedirs(files_path, exist_ok=True)
     user_path = os.path.join(files_path, username)
     os.makedirs(user_path, exist_ok=True)
     repo_path = os.path.join(user_path, repository)
-    if os.path.exists(repo_path):
-        shutil.rmtree(repo_path)
-        os.mkdir(repo_path)
+    os.makedirs(repo_path, exist_ok=True)
+    # if os.path.exists(repo_path):
+    #     shutil.rmtree(repo_path)
+    #     os.mkdir(repo_path)
 
     for file in files:
-        file_path = os.path.split(full_path[file.name])
+        file_path = os.path.split(full_paths[file.name])
         os.makedirs(os.path.join(repo_path, *file_path[:-1]), exist_ok=True)
         with open(os.path.join(repo_path, *file_path), 'wb+') as destination:
             # Записываем содержимое файла

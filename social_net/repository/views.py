@@ -1,12 +1,15 @@
+import datetime
 import json
 import os
 import random
 import shutil
+import string
 from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -55,6 +58,7 @@ def repository_detail(request, username, repository_name):
 
 @login_required
 def create_repository(request):
+    # TODO: не загружает пустые папки
     if request.method == 'POST':
         form = RepositoryCreationForm(request.POST, user=request.user)
         if form.is_valid():
@@ -65,8 +69,16 @@ def create_repository(request):
             )
             files = request.FILES.getlist('files')
             if len(files) > 0:
-                full_path = request.POST['directories']
-                save_uploaded_files(files, full_path, repository.user.username, repository.name)
+                full_paths = request.POST['directories']
+                full_paths = json.loads(full_paths)
+                assert len(files) == len(full_paths)
+                for i in range(len(files)):
+                    save_uploaded_files([files[i]], {files[i].name: full_paths[i]}, repository.user.username, repository.name)
+            else:
+                temp_repository_name = request.POST['temp_repository_name']
+                full_path_temp_repository = os.path.join(settings.MEDIA_ROOT, 'files', request.user.username, temp_repository_name)
+                if os.path.exists(full_path_temp_repository):
+                    os.rename(full_path_temp_repository, os.path.join(settings.MEDIA_ROOT, 'files', request.user.username, repository.name))
             repository.save()
             messages.success(request, 'Repository created successfully')
             return redirect('profile', request.user)
@@ -74,7 +86,28 @@ def create_repository(request):
             messages.error(request, 'Error creating new repository')
     else:
         form = RepositoryCreationForm(user=request.user)
-    return render(request, 'repository/create_repository.html', {'form': form})
+    temp_repository_name = 'tmp_' + str(datetime.date.today()) + '_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(5))
+    return render(request, 'repository/create_repository.html', {'form': form, 'temp_repository_name': temp_repository_name})
+
+
+@login_required()
+def file_upload_view(request, temp_repository_name):
+    """
+    Сохраняет файл с помощью save_uploaded_files в media
+    Относительные пути удаляет браузер или Django, поэтому их передаем с помощью JS
+    в словаре full_paths в виде {"имя_файла": "относительный_путь_файла"}
+    :return:
+    """
+    if request.method == 'POST':
+        files = request.FILES.getlist('file')
+        if files:
+            full_paths = request.POST['full_paths']
+            full_paths = json.loads(full_paths)
+            save_uploaded_files(files, full_paths, request.user.username, temp_repository_name)
+            return JsonResponse({'message': f'Файл {full_paths[files[0].name]} загружен успешно!'})
+        else:
+            return JsonResponse({'message': 'Нет файлов'})
+    return render(request, 'repository/upload.html')
 
 
 @login_required()
@@ -114,3 +147,7 @@ def file_detail(request, username, repository_name, relative_path):
         elif file_type == 'img':
             img_path = os.path.join('files', username, repository_name, relative_path)
         return render(request, 'repository/file_detail.html', {'repository': repository, 'relative_path': relative_path, 'text_lines': text_lines, 'img_path': img_path})
+
+
+
+

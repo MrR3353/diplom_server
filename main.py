@@ -34,11 +34,14 @@
 # ├── db.sqlite3
 # ├── manage.py
 # └── README.md
+import datetime
 import json
 import os
 import shutil
+
 from pathlib import Path
 
+from django.core.files.uploadedfile import UploadedFile
 
 # cd .\social_net\
 # python manage.py runserver
@@ -75,26 +78,10 @@ from pathlib import Path
 # os.makedirs('a/b/c/d/e.py', exist_ok=True)
 # shutil.rmtree('a/b')
 
-# for i in range(1, 6):
-#     print(i)
-#
-# i = 1
-# while i <= 5:
-#     print(i)
-#     i += 1
 
+# a = '["Достоевский/17.txt","Достоевский/Идиот.htm","Достоевский/Идиот.pdf","Достоевский/Идиот.rtf","Достоевский/Преступление и наказание.pdf","Достоевский/Преступление и наказание.txt","Достоевский/Новая папка/17.txt","Достоевский/Новая папка/Идиот.htm","Достоевский/Новая папка/Идиот.pdf"]'
+# directories = json.loads(a)
+# print(directories[0])
+import random, string
 
-minr = 10**10
-for n in range(10, 1000):
-    k = bin(n)[2:]
-    if n % 3 == 0:
-        k += k[-3:]
-    else:
-        ost = bin((n % 3) * 3)[2:]
-        k += ost
-    r = int(k, 2)
-    if r > 151:
-        # if r < minr:
-        #     minr = r
-        minr = min(minr, r)
-print(minr)
+print(str(datetime.date.today()) + '_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(5)))

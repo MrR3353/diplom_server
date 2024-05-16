@@ -1,0 +1,29 @@
+<!-- Форма для загрузки файлов -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+
+<form action="{% url 'file_upload_view' temp_repository_name %}" class="dropzone" id="my-dropzone" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" id="full_paths" name="full_paths" hidden />
+</form>
+
+<script>
+    Dropzone.options.myDropzone = {
+        paramName: "file",
+        init: function () {
+            var myDropzone = this;
+
+            // Обработка события "sending" для добавления информации о пути файла в FormData
+            this.on("sending", function(file, xhr, formData) {
+                var full_paths = {};
+                if (file.webkitRelativePath) {
+                        full_paths[file.name] = file.webkitRelativePath;
+                } else {
+                        full_paths[file.name] = file.fullPath || file.name; // Обработать случаи без webkitRelativePath
+                }
+                console.log(full_paths);
+                document.querySelector("#full_paths").value = JSON.stringify(full_paths);
+            });
+        }
+    };
+</script>
