@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import RepositoryCreationForm
 from .models import Repository
@@ -108,6 +109,24 @@ def file_upload_view(request, temp_repository_name):
         else:
             return JsonResponse({'message': 'Нет файлов'})
     return render(request, 'repository/upload.html')
+
+
+@csrf_exempt
+def api_upload(request, username, repository_name):
+    if request.method == 'POST':
+        user = get_object_or_404(User, username=username)
+        repository = get_object_or_404(Repository, user=user, name=repository_name)
+        token = request.POST['token']
+        if user.profile.token != token:
+            return JsonResponse({'message': 'Invalid token'})
+        path = request.POST['path']
+        file = request.FILES.get('file')
+        if file:
+            save_uploaded_files([file], {file.name: path}, username, repository_name)
+            return JsonResponse({'message': 'Ok', 'file': file.name, 'path': path})
+        else:
+            return JsonResponse({'message': 'Нет файла'})
+    return JsonResponse({'message': 'Method not allowed'})
 
 
 @login_required()

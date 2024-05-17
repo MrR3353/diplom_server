@@ -15,10 +15,7 @@ def save_uploaded_files(files, full_paths, username, repository):
     os.makedirs(user_path, exist_ok=True)
     repo_path = os.path.join(user_path, repository)
     os.makedirs(repo_path, exist_ok=True)
-    # if os.path.exists(repo_path):
-    #     shutil.rmtree(repo_path)
-    #     os.mkdir(repo_path)
-
+    print(repo_path)
     for file in files:
         file_path = os.path.split(full_paths[file.name])
         os.makedirs(os.path.join(repo_path, *file_path[:-1]), exist_ok=True)
