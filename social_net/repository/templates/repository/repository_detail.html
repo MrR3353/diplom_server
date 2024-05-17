@@ -47,7 +47,7 @@
 <pre><code>vcs clone http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/download
 </code></pre></p>
             {% if repository.description %}
-                {{repository.description}}
+                <pre>{{repository.description}}</pre>
             {% endif %}
         </div>
     </div>
@@ -75,10 +75,11 @@ vcs push
 </code></pre></p>
         </div>
         <div class="col">
-            {% if repository.description %}
-                {{repository.description}}
-            {% endif %}
             {% include 'repository/upload.html' with temp_repository_name=repository.name %}
+            <p></p>
+            {% if repository.description %}
+                <pre>{{repository.description}}</pre>
+            {% endif %}
         </div>
     </div>
 
