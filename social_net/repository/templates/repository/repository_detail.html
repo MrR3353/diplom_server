@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 {% block title %}{{repository.name}}{% endblock %}
 {% block content %}
 <style>
@@ -24,20 +25,32 @@
 
 
 <h1><a href="{% url 'repository_detail' repository.user.username repository.name %}">{{repository.name}}</a></h1>
-<p>{{repository.description}}</p>
 
 {% if file_structure %}
     <div class="row">
         <div class="col">
+            <h5>
+            {% if file_structure.path %}
+                {% with text=file_structure.path %}
+                    {% for part, path in text|split_by_slash %}<a href="{% url 'file_detail' repository.user.username repository.name path %}">{{part}}\</a>{% endfor %}
+                {% endwith %}
+            {% endif %}
+            </h5>
             <ul>
                 {% include 'repository/repository_files.html' %}
             </ul>
         </div>
         <div class="col">
-            <button id="expandButton" class="expand" onclick="expand_collapse()">Expand all</button>
+            <button id="expandButton" class="expand btn btn-secondary" onclick="expand_collapse()">Expand all</button>
+            <p>
+            <p>To download files from this repository use:
+<pre><code>vcs clone http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/download
+</code></pre></p>
+            {% if repository.description %}
+                {{repository.description}}
+            {% endif %}
         </div>
     </div>
-
 
 {% else %}
     <style>
@@ -51,12 +64,24 @@
             text-shadow: none;
         }
     </style>
+    <div class="row">
+        <div class="col">
     <p>No files added</p>
     <p>To upload files from local repository use:
-<pre><code>vcs remote http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/upload
+<pre><code>vcs init
+vcs remote http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/upload
 vcs token <span class="hidden-text">{{repository.user.profile.token}}</span>
 vcs push
 </code></pre></p>
+        </div>
+        <div class="col">
+            {% if repository.description %}
+                {{repository.description}}
+            {% endif %}
+            {% include 'repository/upload.html' with temp_repository_name=repository.name %}
+        </div>
+    </div>
+
 {% endif %}
 
 
@@ -84,7 +109,7 @@ vcs push
         var btn = document.getElementById("expandButton");
         var carets = document.getElementsByClassName("caret");
 
-        if (btn.className == "expand") {
+        if (btn.classList.contains("expand")) {
             for (var i = 0; i < nestedElements.length; i++) {
                 nestedElements[i].classList.add("active");
             }

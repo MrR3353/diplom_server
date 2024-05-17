@@ -1,4 +1,6 @@
 from django import forms
+from django.db.models.functions import Lower
+
 from .models import Repository
 
 
@@ -24,6 +26,6 @@ class RepositoryCreationForm(forms.ModelForm):
 
     def clean_name(self):
         data = self.cleaned_data['name']
-        if Repository.objects.filter(user=self.user, name=data).exists():
+        if Repository.objects.filter(user=self.user).annotate(lower_name=Lower('name')).filter(lower_name=data.lower()).exists():
             raise forms.ValidationError('Repository with such name already exists.')
         return data

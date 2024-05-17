@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import shutil
 from pathlib import Path
@@ -69,3 +70,13 @@ def detect_encoding(file_path):
         encoding = result['encoding']
         confidence = result['confidence']
         return encoding
+
+
+def get_human_readable_size(size_bytes):
+    if size_bytes == 0:
+        return "0 B"
+    size_name = ("B", "KB", "MB", "GB", "TB", "PB")
+    i = int(math.log(size_bytes, 1024)) if size_bytes > 0 else 0
+    p = math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return f"{s} {size_name[i]}"

@@ -1,22 +1,26 @@
 import datetime
+import io
 import json
 import os
 import random
 import shutil
 import string
+import time
+import zipfile
 from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse, HttpResponse, Http404, FileResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from .forms import RepositoryCreationForm
 from .models import Repository
-from .file_handlers import save_uploaded_files, get_file_structure, get_file_type, detect_encoding
+from .file_handlers import save_uploaded_files, get_file_structure, get_file_type, detect_encoding, \
+    get_human_readable_size
 from social_net import settings
 
 
@@ -82,7 +86,7 @@ def create_repository(request):
                     os.rename(full_path_temp_repository, os.path.join(settings.MEDIA_ROOT, 'files', request.user.username, repository.name))
             repository.save()
             messages.success(request, 'Repository created successfully')
-            return redirect('profile', request.user)
+            return redirect('repository_detail', repository.user.username, repository.name)
         else:
             messages.error(request, 'Error creating new repository')
     else:
@@ -118,15 +122,43 @@ def api_upload(request, username, repository_name):
         repository = get_object_or_404(Repository, user=user, name=repository_name)
         token = request.POST['token']
         if user.profile.token != token:
-            return JsonResponse({'message': 'Invalid token'})
+            return JsonResponse({'message': 'Invalid token'}, status=401)
         path = request.POST['path']
         file = request.FILES.get('file')
         if file:
             save_uploaded_files([file], {file.name: path}, username, repository_name)
             return JsonResponse({'message': 'Ok', 'file': file.name, 'path': path})
         else:
-            return JsonResponse({'message': 'Нет файла'})
-    return JsonResponse({'message': 'Method not allowed'})
+            return JsonResponse({'message': 'Нет файла'}, status=400)
+    return JsonResponse({'message': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def api_download(request, username, repository_name):
+    if request.method == 'GET':
+        user = get_object_or_404(User, username=username)
+        repository = get_object_or_404(Repository, user=user, name=repository_name)
+        # token = request.GET.get('token')
+        # if user.profile.token != token:
+        #     return JsonResponse({'message': 'Invalid token'}, status=401)
+        full_path = os.path.join(settings.MEDIA_ROOT, 'files', username, repository_name)
+        if not os.path.exists(full_path):
+            return JsonResponse({'message': 'Folder not exists'}, status=404)
+
+        # Create a zip file in memory
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for root, dirs, files in os.walk(full_path):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, full_path)
+                    zip_file.write(file_path, arcname)
+        zip_buffer.seek(0)
+
+        response = HttpResponse(zip_buffer, content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename={os.path.basename(full_path)}.zip'
+        return response
+    return JsonResponse({'message': 'Method not allowed'}, status=405)
 
 
 @login_required()
@@ -154,18 +186,26 @@ def file_detail(request, username, repository_name, relative_path):
     if os.path.isdir(absolute_path):
         repo_path = os.path.join(settings.MEDIA_ROOT, 'files', repository.user.username, repository.name)
         file_structure = get_file_structure(repo_path, relative_path)
-        return render(request, 'repository/dir_detail.html',
+        return render(request, 'repository/repository_detail.html',
                       {'repository': repository, 'file_structure': file_structure})
     else:
         text_lines = None
         img_path = None
         file_type = get_file_type(relative_path)
+        file_info = os.stat(absolute_path)
         if file_type == 'text':
             with open(absolute_path, 'r', encoding=detect_encoding(absolute_path)) as file:
                 text_lines = file.readlines()
         elif file_type == 'img':
             img_path = os.path.join('files', username, repository_name, relative_path)
-        return render(request, 'repository/file_detail.html', {'repository': repository, 'relative_path': relative_path, 'text_lines': text_lines, 'img_path': img_path})
+        return render(request, 'repository/file_detail.html', {
+                          'repository': repository,
+                          'relative_path': relative_path,
+                          'text_lines': text_lines,
+                          'img_path': img_path,
+                          'file_size': get_human_readable_size(file_info.st_size),
+                          'last_modified': time.ctime(file_info.st_mtime),
+        })
 
 
 

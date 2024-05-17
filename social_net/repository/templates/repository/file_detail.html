@@ -12,6 +12,12 @@
 {% endwith %}
 </h5>
 
+<p>
+    Size: {{file_size}}
+    <br>
+    Last modified: {{last_modified}}
+</p>
+
 {% if text_lines %}
 <pre class="line-numbers"><code class="language-javascript">{% for line in text_lines %}<span class="numeration"></span>{{line}}{% endfor %}</code></pre>
 
@@ -48,6 +54,11 @@
     </div>
 
 
+{% endif %}
+
+
+{% if not text_lines and not img_path  %}
+<p>Can't open such file</p>
 {% endif %}
 
 
