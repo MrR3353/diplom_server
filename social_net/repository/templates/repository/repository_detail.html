@@ -40,7 +40,23 @@
 
 
 {% else %}
+    <style>
+        .hidden-text {
+            color: transparent;
+            text-shadow: 0 0 10px rgba(0,0,0,0.6);
+            transition: text-shadow 0.3s, color 0.3s;
+        }
+        .hidden-text:hover {
+            color: black;
+            text-shadow: none;
+        }
+    </style>
     <p>No files added</p>
+    <p>To upload files from local repository use:
+<pre><code>vcs remote http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/upload
+vcs token <span class="hidden-text">{{repository.user.profile.token}}</span>
+vcs push
+</code></pre></p>
 {% endif %}
 
 
