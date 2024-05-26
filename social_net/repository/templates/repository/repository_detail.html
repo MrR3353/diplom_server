@@ -65,8 +65,9 @@
         }
     </style>
     <div class="row">
+        <p>No files added</p>
+        {% if repository.user == user %}
         <div class="col">
-    <p>No files added</p>
     <p>To upload files from local repository use:
 <pre><code>vcs init
 vcs remote http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/upload
@@ -81,6 +82,7 @@ vcs push
                 <pre>{{repository.description}}</pre>
             {% endif %}
         </div>
+        {% endif %}
     </div>
 
 {% endif %}
