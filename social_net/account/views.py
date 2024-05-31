@@ -1,10 +1,18 @@
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+import json
+import os
+
+from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
+from django.views.decorators.csrf import csrf_exempt
+
+from . import yandex_api
+from .forms import UserRegistrationForm, UserEditForm, ProfileEditForm
 from .models import Profile
 from django.contrib import messages
+from social_net import settings
 
 
 # def user_login(request):
@@ -68,4 +76,24 @@ def edit(request):
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileEditForm(instance=request.user.profile)
     return render(request, 'account/edit.html', {'user_form': user_form, 'profile_form': profile_form})
+
+
+@csrf_exempt
+@login_required
+def yandex(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        access_token = data.get('access_token')
+        user = get_object_or_404(User, username=request.user.username)
+        user.profile.yandex_token = access_token
+        user.profile.save()
+        return JsonResponse({'message': 'OK'})
+    return JsonResponse({'message': 'Method not allowed'}, status=405)
+
+
+@login_required
+def yandex_upload(request, username, repository_name):
+    yandex_api.upload_folder(request.user.profile.yandex_token, os.path.join(settings.MEDIA_ROOT, 'files', username, repository_name))
+    messages.success(request, 'Repository uploaded to Yandex disc')
+    return redirect('repository_detail', username, repository_name)
 

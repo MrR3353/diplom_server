@@ -42,6 +42,9 @@
         </div>
         <div class="col">
             <button id="expandButton" class="expand btn btn-secondary" onclick="expand_collapse()">Expand all</button>
+            {% if user.profile.yandex_token %}
+            <a class="btn btn-success mx-2" href="{% url 'yandex_upload' repository.user.username repository.name %}" role="button">Upload to Yandex Disk</a>
+            {% endif %}
             <p>
             <p>To download files from this repository use:
 <pre><code>vcs clone http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/download

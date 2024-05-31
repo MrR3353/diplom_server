@@ -17,5 +17,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),
     path('edit/', views.edit, name='edit'),
+    path('yandex/', views.yandex, name='yandex'),
+    path('yandex/upload/<str:username>/<str:repository_name>', views.yandex_upload, name='yandex_upload'),
     path('', include('django.contrib.auth.urls')),
 ]
