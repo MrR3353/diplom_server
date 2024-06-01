@@ -291,6 +291,7 @@ img.user-detail {
 .active {
     display: block;
 }
-ul {
-    list-style-type: none;
+.blurred {
+    filter: blur(10px);
+    pointer-events: none;
 }

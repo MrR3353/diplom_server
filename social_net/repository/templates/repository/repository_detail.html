@@ -26,7 +26,8 @@
 
 <h1><a href="{% url 'repository_detail' repository.user.username repository.name %}">{{repository.name}}</a></h1>
 
-{% if file_structure %}
+<div class="content">
+    {% if file_structure %}
     <div class="row">
         <div class="col">
             <h5>
@@ -55,45 +56,49 @@
         </div>
     </div>
 
-{% else %}
-    <style>
-        .hidden-text {
-            color: transparent;
-            text-shadow: 0 0 10px rgba(0,0,0,0.6);
-            transition: text-shadow 0.3s, color 0.3s;
-        }
-        .hidden-text:hover {
-            color: black;
-            text-shadow: none;
-        }
-    </style>
-    <div class="row">
-        <p>No files added</p>
-        {% if repository.user == user %}
-        <div class="col">
+    {% else %}
+        <style>
+            .hidden-text {
+                color: transparent;
+                text-shadow: 0 0 10px rgba(0,0,0,0.6);
+                transition: text-shadow 0.3s, color 0.3s;
+            }
+            .hidden-text:hover {
+                color: black;
+                text-shadow: none;
+            }
+        </style>
+        <div class="row">
+            <div class="col">
+            <p>No files added</p>
+            {% if repository.user == user %}
     <p>To upload files from local repository use:
-<pre><code>vcs init
-vcs remote http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/upload
-vcs token <span class="hidden-text">{{repository.user.profile.token}}</span>
-vcs push
-</code></pre></p>
-        </div>
-        <div class="col">
-            {% include 'repository/upload.html' with temp_repository_name=repository.name %}
-            <p></p>
-            {% if repository.description %}
-                <pre>{{repository.description}}</pre>
+    <pre><code>vcs init
+    vcs remote http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/upload
+    vcs token <span class="hidden-text">{{repository.user.profile.token}}</span>
+    vcs push
+    </code></pre></p>
             {% endif %}
+            </div>
+            <div class="col">
+                {% if repository.user == user %}
+                    {% include 'repository/upload.html' with temp_repository_name=repository.name %}
+                    <p></p>
+                {% endif %}
+                {% if repository.description %}
+                    <pre>{{repository.description}}</pre>
+                {% endif %}
+            </div>
+
         </div>
-        {% endif %}
-    </div>
+    {% endif %}
 
-{% endif %}
+    {% if repository.user == user %}
+        <a href="{% url 'delete_repository' repository.pk %}" class="btn btn-danger me-2">Delete</a>
+    {% endif %}
 
+</div>
 
-{% if repository.user == user %}
-    <a href="{% url 'delete_repository' repository.pk %}" class="btn btn-danger me-2">Delete</a>
-{% endif %}
 
 
 <script>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% block title %}{{repository.name}}{% endblock %}
+{% block content %}
+
+<h1><a href="{% url 'repository_detail' repository.user.username repository.name %}">{{repository.name}}</a></h1>
+
+<div class="content">
+        <div class="row">
+            <div class="col">
+            <p>This repository is paid. Please subscribe to view the content.</p>
+
+            </div>
+            <div class="col">
+                {% if repository.description %}
+                    <pre>{{repository.description}}</pre>
+                {% endif %}
+            </div>
+
+        </div>
+
+
+</div>
+
+{% endblock %}

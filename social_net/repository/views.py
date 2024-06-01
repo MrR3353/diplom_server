@@ -58,6 +58,10 @@ def repository_detail(request, username, repository_name):
     file_structure = None
     if os.path.exists(repo_path):
         file_structure = get_file_structure(repo_path, '')
+    if repository.type == Repository.PRIVATE and request.user != repository.user:
+        raise Http404("Repository does not exist")
+    elif repository.type == Repository.PAID and request.user != repository.user:    # TODO: проверить покупку репо
+        return render(request, 'repository/repository_buy.html', {'repository': repository})
     return render(request, 'repository/repository_detail.html', {'repository': repository, 'file_structure': file_structure})
 
 
@@ -70,6 +74,7 @@ def create_repository(request):
             repository = Repository(
                 name=request.POST['name'],
                 description=request.POST['description'],
+                type=request.POST['type'],
                 user=request.user  # Указываем текущего пользователя
             )
             files = request.FILES.getlist('files')
@@ -183,6 +188,12 @@ def file_detail(request, username, repository_name, relative_path):
 
     user = get_object_or_404(User, username=username)
     repository = get_object_or_404(Repository, user=user, name=repository_name)
+
+    if repository.type == Repository.PRIVATE and request.user != repository.user:
+        raise Http404("Repository does not exist")
+    elif repository.type == Repository.PAID and request.user != repository.user:    # TODO: проверить покупку репо
+        return render(request, 'repository/repository_buy.html', {'repository': repository})
+
     if os.path.isdir(absolute_path):
         repo_path = os.path.join(settings.MEDIA_ROOT, 'files', repository.user.username, repository.name)
         file_structure = get_file_structure(repo_path, relative_path)
