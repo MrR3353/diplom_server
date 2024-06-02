@@ -22,6 +22,7 @@ from .models import Repository
 from .file_handlers import save_uploaded_files, get_file_structure, get_file_type, detect_encoding, \
     get_human_readable_size
 from social_net import settings
+from payment.models import Order
 
 
 def developers(request):
@@ -31,6 +32,11 @@ def developers(request):
 
 def all_repositories(request):
     repositories = Repository.objects.all()
+    for i in range(len(repositories)):
+        if repositories[i].user == request.user or Order.objects.filter(user=request.user, repository=repositories[i], paid=True):
+            repositories[i].available = True
+        else:
+            repositories[i].available = False
     return render(request, 'repository/all_repositories.html',
                   {'section': 'all_repositories', 'repositories': repositories})
 
@@ -41,6 +47,12 @@ def profile(request, username):
     default_profile_images = os.listdir('../social_net/account/static/images/default_profile_images')
     # default_profile_image = default_profile_images[user.id % len(default_profile_images)]
     default_profile_image = random.choice(default_profile_images)
+    for i in range(len(repositories)):
+        if repositories[i].user == request.user or Order.objects.filter(user=request.user, repository=repositories[i], paid=True):
+            repositories[i].available = True
+        else:
+            repositories[i].available = False
+
     if user == request.user:
         return render(request, 'repository/profile.html',
                       {'section': 'profile', 'repositories': repositories, 'author': user,
@@ -60,8 +72,10 @@ def repository_detail(request, username, repository_name):
         file_structure = get_file_structure(repo_path, '')
     if repository.type == Repository.PRIVATE and request.user != repository.user:
         raise Http404("Repository does not exist")
-    elif repository.type == Repository.PAID and request.user != repository.user:    # TODO: проверить покупку репо
-        return render(request, 'repository/repository_buy.html', {'repository': repository})
+    elif repository.type == Repository.PAID and request.user != repository.user:
+        orders = Order.objects.filter(user=request.user, repository=repository, paid=True)
+        if not orders:
+            return render(request, 'repository/repository_buy.html', {'repository': repository})
     return render(request, 'repository/repository_detail.html', {'repository': repository, 'file_structure': file_structure})
 
 
@@ -75,6 +89,7 @@ def create_repository(request):
                 name=request.POST['name'],
                 description=request.POST['description'],
                 type=request.POST['type'],
+                price=request.POST['price'],
                 user=request.user  # Указываем текущего пользователя
             )
             files = request.FILES.getlist('files')
@@ -191,8 +206,10 @@ def file_detail(request, username, repository_name, relative_path):
 
     if repository.type == Repository.PRIVATE and request.user != repository.user:
         raise Http404("Repository does not exist")
-    elif repository.type == Repository.PAID and request.user != repository.user:    # TODO: проверить покупку репо
-        return render(request, 'repository/repository_buy.html', {'repository': repository})
+    elif repository.type == Repository.PAID and request.user != repository.user:
+        orders = Order.objects.filter(user=request.user, repository=repository, paid=True)
+        if not orders:
+            return render(request, 'repository/repository_buy.html', {'repository': repository})
 
     if os.path.isdir(absolute_path):
         repo_path = os.path.join(settings.MEDIA_ROOT, 'files', repository.user.username, repository.name)

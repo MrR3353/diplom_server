@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'account',
     'repository',
+    'payment',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,4 +142,12 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 DATA_UPLOAD_MAX_NUMBER_FILES = None
+
+# Настроечные параметры Stripe
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51PNKvrCLRlEw2zwsDeZVcTh4b0iEl8UfGgGjk6jHEp9hcoXSHAvMdY1nUnd2Bs0WJYoYWdQEIVi1ChiUvBUWA60n00E9qD94nN' # Публикуемый ключ
+STRIPE_SECRET_KEY = 'sk_test_51PNKvrCLRlEw2zws9NWZV4ZlFgBvoOSIYYpbn0soi2ZDYbO48eFPDemoV2S4tqIR7q1w03M7LHOpxRn9QXgbeHPp009EYz68sW' # Секретный ключ
+STRIPE_API_VERSION = '2022-08-01'
+STRIPE_WEBHOOK_SECRET = 'whsec_cc7c9774b5c7fec5bea4f1d9d11a4017eab545096c5c31b27588b3d6174bfcee'
+
+
 

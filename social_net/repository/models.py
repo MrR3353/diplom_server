@@ -22,6 +22,8 @@ class Repository(models.Model):
         choices=REPOSITORY_TYPES,
         default=PUBLIC,
     )
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
 
     def __str__(self):
         return f'Repository {self.name}'

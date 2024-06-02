@@ -22,7 +22,7 @@ class RepositoryCreationForm(forms.ModelForm):
 
     class Meta:
         model = Repository
-        fields = ['name', 'description', 'type']
+        fields = ['name', 'description', 'type', 'price']
 
     def clean_name(self):
         data = self.cleaned_data['name']

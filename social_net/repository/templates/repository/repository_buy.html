@@ -8,8 +8,11 @@
 <div class="content">
         <div class="row">
             <div class="col">
-            <p>This repository is paid. Please subscribe to view the content.</p>
-
+                <p>This repository is paid. Please subscribe to view the content.</p>
+                <form action="{% url "payment:process" repository.id %}" method="post">
+                    <input class="btn btn-success" type="submit" value="{{repository.price}} $">
+                    {% csrf_token %}
+                </form>
             </div>
             <div class="col">
                 {% if repository.description %}
