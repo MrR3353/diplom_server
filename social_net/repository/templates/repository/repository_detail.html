@@ -73,11 +73,11 @@
             <p>No files added</p>
             {% if repository.user == user %}
     <p>To upload files from local repository use:
-    <pre><code>vcs init
-    vcs remote http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/upload
-    vcs token <span class="hidden-text">{{repository.user.profile.token}}</span>
-    vcs push
-    </code></pre></p>
+<pre><code>vcs init
+vcs remote http://127.0.0.1:8000/{{repository.user.username}}/{{repository.name}}/upload
+vcs token <span class="hidden-text">{{repository.user.profile.token}}</span>
+vcs push
+</code></pre></p>
             {% endif %}
             </div>
             <div class="col">
