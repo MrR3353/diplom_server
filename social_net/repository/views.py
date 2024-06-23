@@ -33,7 +33,7 @@ def developers(request):
 def all_repositories(request):
     repositories = Repository.objects.all()
     for i in range(len(repositories)):
-        if repositories[i].user == request.user or Order.objects.filter(user=request.user, repository=repositories[i], paid=True):
+        if repositories[i].user == request.user or Order.objects.filter(user=request.user.id, repository=repositories[i], paid=True):
             repositories[i].available = True
         else:
             repositories[i].available = False
